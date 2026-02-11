@@ -1,65 +1,219 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import DashboardLayout from "./components/DashboardLayout";
+import CircularProgress from "./components/CircularProgress";
+import MetricCard from "./components/MetricCard";
+import PerformanceChart from "./components/PerformanceChart";
+import AllocationChart from "./components/AllocationChart";
+import {
+  DollarSign,
+  Activity,
+  GitBranch,
+  BrainCircuit,
+  TrendingUp,
+  TrendingDown,
+  AlertTriangle,
+} from "lucide-react";
+
+export default function OverviewPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <DashboardLayout
+      title="Overview"
+      subtitle="Last updated: Feb 11, 2026 · 09:41 AM EST"
+    >
+      {/* ── Top Cards Grid ───────────────────────────────────── */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr 1fr",
+          gap: 20,
+          marginBottom: 24,
+        }}
+      >
+        {/* Risk Score Card */}
+        <div
+          className="card-glow"
+          style={{
+            padding: "28px 24px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gridRow: "1 / 3",
+          }}
+        >
+          <div
+            style={{
+              fontSize: 13,
+              fontWeight: 500,
+              color: "var(--fg-secondary)",
+              marginBottom: 20,
+              alignSelf: "flex-start",
+            }}
+          >
+            Overall Risk Score
+          </div>
+          <CircularProgress
+            value={42}
+            label="/ 100"
+            sublabel="Moderate"
+            size={170}
+            strokeWidth={12}
+          />
+          <div
+            style={{
+              display: "flex",
+              gap: 12,
+              marginTop: 20,
+              width: "100%",
+            }}
+          >
+            {[
+              { label: "VaR 95%", value: "-3.2%", color: "var(--risk-high)" },
+              { label: "Sharpe", value: "1.45", color: "var(--accent)" },
+            ].map((item) => (
+              <div
+                key={item.label}
+                style={{
+                  flex: 1,
+                  padding: "10px 12px",
+                  background: "var(--bg-elevated)",
+                  borderRadius: "var(--radius-md)",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 10,
+                    color: "var(--fg-muted)",
+                    marginBottom: 2,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  {item.label}
+                </div>
+                <div
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    color: item.color,
+                  }}
+                >
+                  {item.value}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Metric Cards */}
+        <MetricCard
+          icon={DollarSign}
+          title="Portfolio Value"
+          value="$1,284,520"
+          change="12.4% (12mo)"
+          changeType="positive"
+          accentColor="var(--accent)"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <MetricCard
+          icon={Activity}
+          title="Volatility (Ann.)"
+          value="14.8%"
+          change="2.1% from last month"
+          changeType="negative"
+          accentColor="var(--warning)"
+        />
+        <MetricCard
+          icon={GitBranch}
+          title="Correlation Conc."
+          value="0.67"
+          change="Moderate clustering"
+          changeType="neutral"
+          accentColor="#6366f1"
+        />
+
+        {/* AI Explanation block — spans 3 columns, second row */}
+        <div
+          className="card"
+          style={{
+            gridColumn: "2 / 5",
+            padding: "20px 24px",
+            display: "flex",
+            gap: 14,
+          }}
+        >
+          <div
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: "var(--radius-md)",
+              background: "var(--accent-soft)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <BrainCircuit
+              size={18}
+              color="var(--accent)"
+              strokeWidth={2}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                marginBottom: 6,
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "var(--fg-primary)",
+                }}
+              >
+                AI Risk Analysis
+              </span>
+              <span className="badge badge-accent">Live</span>
+            </div>
+            <p
+              style={{
+                fontSize: 13,
+                lineHeight: 1.65,
+                color: "var(--fg-secondary)",
+                margin: 0,
+              }}
+            >
+              Your portfolio risk is currently <strong style={{ color: "var(--risk-medium)" }}>moderate</strong>.
+              The primary risk driver is a{" "}
+              <strong style={{ color: "var(--fg-primary)" }}>high correlation concentration (0.67)</strong>{" "}
+              between US and International equities, which reduces diversification
+              benefits during market downturns. Annualized volatility increased 2.1%
+              month-over-month, primarily driven by recent tech sector earnings
+              uncertainty. Consider increasing fixed income allocation by 3-5% to
+              improve risk-adjusted returns. The current Sharpe ratio of 1.45 suggests
+              favorable risk-reward, but sector-level VaR indicates elevated tail risk
+              in the technology sub-portfolio.
+            </p>
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+
+      {/* ── Charts Row ───────────────────────────────────────── */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "2fr 1fr",
+          gap: 20,
+        }}
+      >
+        <PerformanceChart />
+        <AllocationChart />
+      </div>
+    </DashboardLayout>
   );
 }
