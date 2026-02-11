@@ -1,8 +1,8 @@
 "use client";
 
-import DashboardLayout from "../components/DashboardLayout";
+import DashboardLayout from "../../components/DashboardLayout";
 import { Plus, ArrowUpDown } from "lucide-react";
-import { useTranslation } from "../i18n/LanguageContext";
+import { useTranslation } from "../../i18n/LanguageContext";
 
 const assets = [
     {

@@ -1,7 +1,7 @@
 "use client";
 
-import DashboardLayout from "../components/DashboardLayout";
-import CircularProgress from "../components/CircularProgress";
+import DashboardLayout from "../../components/DashboardLayout";
+import CircularProgress from "../../components/CircularProgress";
 import {
     BarChart,
     Bar,
@@ -19,7 +19,7 @@ import {
     Gauge,
     AlertTriangle,
 } from "lucide-react";
-import { useTranslation } from "../i18n/LanguageContext";
+import { useTranslation } from "../../i18n/LanguageContext";
 
 const volatilityData = [
     { sector: "Tech", value: 28.4, color: "#f87171" },

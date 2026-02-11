@@ -1,6 +1,6 @@
 "use client";
 
-import DashboardLayout from "../components/DashboardLayout";
+import DashboardLayout from "../../components/DashboardLayout";
 import {
     User,
     Shield,
@@ -13,7 +13,7 @@ import {
     ToggleRight,
 } from "lucide-react";
 import { useState } from "react";
-import { useTranslation } from "../i18n/LanguageContext";
+import { useTranslation } from "../../i18n/LanguageContext";
 
 interface SettingToggleProps {
     label: string;

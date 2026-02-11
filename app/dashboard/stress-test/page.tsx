@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import DashboardLayout from "../components/DashboardLayout";
+import DashboardLayout from "../../components/DashboardLayout";
 import {
     AreaChart,
     Area,
@@ -12,7 +12,7 @@ import {
     ResponsiveContainer,
 } from "recharts";
 import { AlertTriangle, TrendingDown, Zap, Snowflake } from "lucide-react";
-import { useTranslation } from "../i18n/LanguageContext";
+import { useTranslation } from "../../i18n/LanguageContext";
 
 type ScenarioKey = "crash" | "rate" | "crypto";
 

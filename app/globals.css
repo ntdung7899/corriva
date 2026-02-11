@@ -164,3 +164,19 @@ body {
 .animate-slide-in {
   animation: slideIn 0.35s ease-out both;
 }
+
+/* ── Landing Page Animations ───────────────────────────────── */
+@keyframes float {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}

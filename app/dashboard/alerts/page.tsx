@@ -1,6 +1,6 @@
 "use client";
 
-import DashboardLayout from "../components/DashboardLayout";
+import DashboardLayout from "../../components/DashboardLayout";
 import {
     AlertTriangle,
     TrendingUp,
@@ -9,7 +9,7 @@ import {
     CheckCircle2,
     Clock,
 } from "lucide-react";
-import { useTranslation } from "../i18n/LanguageContext";
+import { useTranslation } from "../../i18n/LanguageContext";
 
 const typeStyles: Record<string, { color: string; bg: string }> = {
     critical: { color: "var(--risk-high)", bg: "var(--risk-high-soft)" },
