@@ -14,12 +14,15 @@ import {
   TrendingDown,
   AlertTriangle,
 } from "lucide-react";
+import { useTranslation } from "./i18n/LanguageContext";
 
 export default function OverviewPage() {
+  const { t } = useTranslation();
+
   return (
     <DashboardLayout
-      title="Overview"
-      subtitle="Last updated: Feb 11, 2026 · 09:41 AM EST"
+      title={t("overview.title")}
+      subtitle={t("overview.subtitle")}
     >
       {/* ── Top Cards Grid ───────────────────────────────────── */}
       <div
@@ -50,12 +53,12 @@ export default function OverviewPage() {
               alignSelf: "flex-start",
             }}
           >
-            Overall Risk Score
+            {t("overview.overallRiskScore")}
           </div>
           <CircularProgress
             value={42}
             label="/ 100"
-            sublabel="Moderate"
+            sublabel={t("overview.moderate")}
             size={170}
             strokeWidth={12}
           />
@@ -109,25 +112,25 @@ export default function OverviewPage() {
         {/* Metric Cards */}
         <MetricCard
           icon={DollarSign}
-          title="Portfolio Value"
+          title={t("overview.portfolioValue")}
           value="$1,284,520"
-          change="12.4% (12mo)"
+          change={t("overview.change12mo")}
           changeType="positive"
           accentColor="var(--accent)"
         />
         <MetricCard
           icon={Activity}
-          title="Volatility (Ann.)"
+          title={t("overview.volatilityAnn")}
           value="14.8%"
-          change="2.1% from last month"
+          change={t("overview.fromLastMonth")}
           changeType="negative"
           accentColor="var(--warning)"
         />
         <MetricCard
           icon={GitBranch}
-          title="Correlation Conc."
+          title={t("overview.correlationConc")}
           value="0.67"
-          change="Moderate clustering"
+          change={t("overview.moderateClustering")}
           changeType="neutral"
           accentColor="#6366f1"
         />
@@ -176,9 +179,9 @@ export default function OverviewPage() {
                   color: "var(--fg-primary)",
                 }}
               >
-                AI Risk Analysis
+                {t("overview.aiRiskAnalysis")}
               </span>
-              <span className="badge badge-accent">Live</span>
+              <span className="badge badge-accent">{t("overview.live")}</span>
             </div>
             <p
               style={{
@@ -187,18 +190,8 @@ export default function OverviewPage() {
                 color: "var(--fg-secondary)",
                 margin: 0,
               }}
-            >
-              Your portfolio risk is currently <strong style={{ color: "var(--risk-medium)" }}>moderate</strong>.
-              The primary risk driver is a{" "}
-              <strong style={{ color: "var(--fg-primary)" }}>high correlation concentration (0.67)</strong>{" "}
-              between US and International equities, which reduces diversification
-              benefits during market downturns. Annualized volatility increased 2.1%
-              month-over-month, primarily driven by recent tech sector earnings
-              uncertainty. Consider increasing fixed income allocation by 3-5% to
-              improve risk-adjusted returns. The current Sharpe ratio of 1.45 suggests
-              favorable risk-reward, but sector-level VaR indicates elevated tail risk
-              in the technology sub-portfolio.
-            </p>
+              dangerouslySetInnerHTML={{ __html: t("overview.aiDescription") }}
+            />
           </div>
         </div>
       </div>

@@ -9,69 +9,7 @@ import {
     CheckCircle2,
     Clock,
 } from "lucide-react";
-
-const alerts = [
-    {
-        id: 1,
-        type: "critical",
-        title: "Tech Sector Overexposure",
-        message:
-            "Technology allocation has reached 31.6%, exceeding the 25% sector concentration threshold. Consider rebalancing.",
-        time: "12 min ago",
-        icon: AlertTriangle,
-        read: false,
-    },
-    {
-        id: 2,
-        type: "warning",
-        title: "Volatility Spike Detected",
-        message:
-            "Annualized portfolio volatility increased by 2.1% month-over-month. Current level: 14.8%.",
-        time: "2 hours ago",
-        icon: TrendingUp,
-        read: false,
-    },
-    {
-        id: 3,
-        type: "critical",
-        title: "VaR Threshold Breach",
-        message:
-            "Daily Value at Risk (95%) has exceeded -3.0% alert threshold. Current VaR: -3.2%.",
-        time: "5 hours ago",
-        icon: ShieldAlert,
-        read: false,
-    },
-    {
-        id: 4,
-        type: "info",
-        title: "Correlation Update",
-        message:
-            "Cross-sector correlation matrix updated. Average pairwise correlation increased from 0.52 to 0.67.",
-        time: "1 day ago",
-        icon: Info,
-        read: true,
-    },
-    {
-        id: 5,
-        type: "success",
-        title: "Rebalancing Complete",
-        message:
-            "Automated rebalancing executed successfully. Fixed income allocation increased from 22% to 25%.",
-        time: "2 days ago",
-        icon: CheckCircle2,
-        read: true,
-    },
-    {
-        id: 6,
-        type: "info",
-        title: "Monthly Risk Report Available",
-        message:
-            "January 2026 risk report has been generated and is ready for review.",
-        time: "3 days ago",
-        icon: Info,
-        read: true,
-    },
-];
+import { useTranslation } from "../i18n/LanguageContext";
 
 const typeStyles: Record<string, { color: string; bg: string }> = {
     critical: { color: "var(--risk-high)", bg: "var(--risk-high-soft)" },
@@ -81,8 +19,74 @@ const typeStyles: Record<string, { color: string; bg: string }> = {
 };
 
 export default function AlertsPage() {
+    const { t } = useTranslation();
+
+    const alerts = [
+        {
+            id: 1,
+            type: "critical",
+            title: t("alerts.techOverexposure"),
+            message: t("alerts.techOverexposureMsg"),
+            time: t("alerts.12minAgo"),
+            icon: AlertTriangle,
+            read: false,
+        },
+        {
+            id: 2,
+            type: "warning",
+            title: t("alerts.volatilitySpike"),
+            message: t("alerts.volatilitySpikeMsg"),
+            time: t("alerts.2hoursAgo"),
+            icon: TrendingUp,
+            read: false,
+        },
+        {
+            id: 3,
+            type: "critical",
+            title: t("alerts.varBreach"),
+            message: t("alerts.varBreachMsg"),
+            time: t("alerts.5hoursAgo"),
+            icon: ShieldAlert,
+            read: false,
+        },
+        {
+            id: 4,
+            type: "info",
+            title: t("alerts.correlationUpdate"),
+            message: t("alerts.correlationUpdateMsg"),
+            time: t("alerts.1dayAgo"),
+            icon: Info,
+            read: true,
+        },
+        {
+            id: 5,
+            type: "success",
+            title: t("alerts.rebalancingComplete"),
+            message: t("alerts.rebalancingCompleteMsg"),
+            time: t("alerts.2daysAgo"),
+            icon: CheckCircle2,
+            read: true,
+        },
+        {
+            id: 6,
+            type: "info",
+            title: t("alerts.monthlyReport"),
+            message: t("alerts.monthlyReportMsg"),
+            time: t("alerts.3daysAgo"),
+            icon: Info,
+            read: true,
+        },
+    ];
+
+    const filterTabs = [
+        t("alerts.all"),
+        t("alerts.critical"),
+        t("alerts.warnings"),
+        t("alerts.info"),
+    ];
+
     return (
-        <DashboardLayout title="Alerts" subtitle="Risk notifications and system events">
+        <DashboardLayout title={t("alerts.title")} subtitle={t("alerts.subtitle")}>
             {/* Filter tabs */}
             <div
                 style={{
@@ -91,7 +95,7 @@ export default function AlertsPage() {
                     marginBottom: 20,
                 }}
             >
-                {["All", "Critical", "Warnings", "Info"].map((tab, i) => (
+                {filterTabs.map((tab, i) => (
                     <button
                         key={tab}
                         style={{

@@ -19,6 +19,7 @@ import {
     Gauge,
     AlertTriangle,
 } from "lucide-react";
+import { useTranslation } from "../i18n/LanguageContext";
 
 const volatilityData = [
     { sector: "Tech", value: 28.4, color: "#f87171" },
@@ -59,42 +60,50 @@ function VolTooltip({ active, payload }: TooltipProps) {
     );
 }
 
-const riskMetrics = [
-    {
-        label: "Value at Risk (95%)",
-        value: "-3.2%",
-        detail: "~$41,105 daily",
-        icon: ShieldAlert,
-        color: "var(--risk-high)",
-    },
-    {
-        label: "Max Drawdown",
-        value: "-8.7%",
-        detail: "Peak-to-trough (12mo)",
-        icon: TrendingDown,
-        color: "var(--warning)",
-    },
-    {
-        label: "Conditional VaR (99%)",
-        value: "-5.1%",
-        detail: "Expected tail loss",
-        icon: AlertTriangle,
-        color: "var(--risk-high)",
-    },
-    {
-        label: "Tracking Error",
-        value: "4.6%",
-        detail: "vs. S&P 500",
-        icon: Gauge,
-        color: "var(--accent)",
-    },
-];
-
 export default function RiskReportPage() {
+    const { t } = useTranslation();
+
+    const riskMetrics = [
+        {
+            label: t("risk.var95"),
+            value: "-3.2%",
+            detail: t("risk.var95Detail"),
+            icon: ShieldAlert,
+            color: "var(--risk-high)",
+        },
+        {
+            label: t("risk.maxDrawdown"),
+            value: "-8.7%",
+            detail: t("risk.maxDrawdownDetail"),
+            icon: TrendingDown,
+            color: "var(--warning)",
+        },
+        {
+            label: t("risk.cvar99"),
+            value: "-5.1%",
+            detail: t("risk.cvar99Detail"),
+            icon: AlertTriangle,
+            color: "var(--risk-high)",
+        },
+        {
+            label: t("risk.trackingError"),
+            value: "4.6%",
+            detail: t("risk.trackingErrorDetail"),
+            icon: Gauge,
+            color: "var(--accent)",
+        },
+    ];
+
+    const riskBreakdown = [
+        { label: t("risk.marketRisk"), val: 52 },
+        { label: t("risk.creditRisk"), val: 28 },
+        { label: t("risk.liquidityRisk"), val: 18 },
+    ];
+
     return (
         <DashboardLayout
-            title="Risk Report"
-            subtitle="Comprehensive risk metrics and analysis"
+            title={t("risk.title")}
+            subtitle={t("risk.subtitle")}
         >
             {/* ── Score + Key Metrics ──────────────────────────────── */}
             <div
@@ -123,12 +132,12 @@ export default function RiskReportPage() {
                             marginBottom: 20,
                         }}
                     >
-                        Composite Risk Score
+                        {t("risk.compositeRiskScore")}
                     </span>
                     <CircularProgress
                         value={42}
                         label="/ 100"
-                        sublabel="Moderate"
+                        sublabel={t("risk.moderate")}
                         size={160}
                         strokeWidth={11}
                     />
@@ -141,11 +150,7 @@ export default function RiskReportPage() {
                             gap: 8,
                         }}
                     >
-                        {[
-                            { label: "Market Risk", val: 52 },
-                            { label: "Credit Risk", val: 28 },
-                            { label: "Liquidity Risk", val: 18 },
-                        ].map((r) => (
+                        {riskBreakdown.map((r) => (
                             <div key={r.label}>
                                 <div
                                     style={{
@@ -276,7 +281,7 @@ export default function RiskReportPage() {
                             marginBottom: 4,
                         }}
                     >
-                        Sector Volatility
+                        {t("risk.sectorVolatility")}
                     </h3>
                     <p
                         style={{
@@ -286,7 +291,7 @@ export default function RiskReportPage() {
                             marginBottom: 20,
                         }}
                     >
-                        Annualized volatility by sector
+                        {t("risk.annualizedBySector")}
                     </p>
                     <ResponsiveContainer width="100%" height={240}>
                         <BarChart data={volatilityData} barSize={28} layout="vertical">
@@ -351,10 +356,10 @@ export default function RiskReportPage() {
                                     color: "var(--fg-primary)",
                                 }}
                             >
-                                AI Risk Assessment
+                                {t("risk.aiRiskAssessment")}
                             </span>
                             <div style={{ fontSize: 11, color: "var(--fg-dim)", marginTop: 1 }}>
-                                Generated Feb 11, 2026
+                                {t("risk.generatedDate")}
                             </div>
                         </div>
                     </div>
@@ -378,22 +383,17 @@ export default function RiskReportPage() {
                             }}
                         >
                             <strong style={{ color: "var(--risk-high)" }}>
-                                High Concentration Alert:
+                                {t("risk.highConcentrationAlert")}
                             </strong>{" "}
-                            Technology exposure represents 31.6% of portfolio with annualized
-                            volatility of 28.4%. This exceeds the recommended 25% sector cap.
+                            {t("risk.highConcentrationDesc")}
                         </div>
 
                         <p style={{ margin: 0 }}>
-                            The portfolio&apos;s 95% Value at Risk of -3.2% translates to a potential
-                            daily loss of approximately $41,105. The max drawdown of -8.7% occurred
-                            during the October correction, recovering within 18 trading days.
+                            {t("risk.varDescription")}
                         </p>
 
                         <p style={{ margin: 0 }}>
-                            Fixed income allocation provides adequate downside hedging. However,
-                            the correlation between equity sectors increased from 0.52 to 0.67
-                            over the past quarter, reducing portfolio diversification benefit.
+                            {t("risk.correlationDescription")}
                         </p>
 
                         <div
@@ -404,9 +404,8 @@ export default function RiskReportPage() {
                                 borderLeft: "3px solid var(--accent)",
                             }}
                         >
-                            <strong style={{ color: "var(--accent)" }}>Recommendation:</strong>{" "}
-                            Reduce tech allocation by 5-7% and increase international fixed income
-                            exposure to improve risk-adjusted returns and lower correlation concentration.
+                            <strong style={{ color: "var(--accent)" }}>{t("risk.recommendation")}</strong>{" "}
+                            {t("risk.recommendationDesc")}
                         </div>
                     </div>
                 </div>

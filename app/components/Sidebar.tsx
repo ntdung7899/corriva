@@ -11,18 +11,20 @@ import {
     Settings,
     ShieldCheck,
 } from "lucide-react";
+import { useTranslation } from "../i18n/LanguageContext";
 
 const navItems = [
-    { label: "Overview", href: "/", icon: LayoutDashboard },
-    { label: "Portfolio", href: "/portfolio", icon: Briefcase },
-    { label: "Risk Report", href: "/risk-report", icon: FileBarChart },
-    { label: "Stress Test", href: "/stress-test", icon: FlaskConical },
-    { label: "Alerts", href: "/alerts", icon: Bell },
-    { label: "Settings", href: "/settings", icon: Settings },
+    { key: "nav.overview", href: "/", icon: LayoutDashboard },
+    { key: "nav.portfolio", href: "/portfolio", icon: Briefcase },
+    { key: "nav.riskReport", href: "/risk-report", icon: FileBarChart },
+    { key: "nav.stressTest", href: "/stress-test", icon: FlaskConical },
+    { key: "nav.alerts", href: "/alerts", icon: Bell },
+    { key: "nav.settings", href: "/settings", icon: Settings },
 ];
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const { t } = useTranslation();
 
     return (
         <aside
@@ -119,7 +121,7 @@ export default function Sidebar() {
                             }}
                         >
                             <Icon size={18} strokeWidth={active ? 2.2 : 1.8} />
-                            {item.label}
+                            {t(item.key)}
                         </Link>
                     );
                 })}
@@ -165,7 +167,7 @@ export default function Sidebar() {
                         John Doe
                     </div>
                     <div style={{ fontSize: 11, color: "var(--fg-muted)" }}>
-                        Portfolio Manager
+                        {t("nav.portfolioManager")}
                     </div>
                 </div>
             </div>

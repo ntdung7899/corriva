@@ -1,6 +1,8 @@
 "use client";
 
 import { Bell, Search } from "lucide-react";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useTranslation } from "../i18n/LanguageContext";
 
 interface TopNavProps {
     title: string;
@@ -8,6 +10,8 @@ interface TopNavProps {
 }
 
 export default function TopNav({ title, subtitle }: TopNavProps) {
+    const { t } = useTranslation();
+
     return (
         <header
             style={{
@@ -71,7 +75,7 @@ export default function TopNav({ title, subtitle }: TopNavProps) {
                     }}
                 >
                     <Search size={14} />
-                    <span>Search…</span>
+                    <span>{t("nav.search")}</span>
                     <span
                         style={{
                             marginLeft: "auto",
@@ -85,6 +89,9 @@ export default function TopNav({ title, subtitle }: TopNavProps) {
                         ⌘K
                     </span>
                 </div>
+
+                {/* Language Switcher */}
+                <LanguageSwitcher />
 
                 {/* Notifications */}
                 <button

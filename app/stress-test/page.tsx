@@ -12,57 +12,9 @@ import {
     ResponsiveContainer,
 } from "recharts";
 import { AlertTriangle, TrendingDown, Zap, Snowflake } from "lucide-react";
+import { useTranslation } from "../i18n/LanguageContext";
 
 type ScenarioKey = "crash" | "rate" | "crypto";
-
-const scenarios: {
-    key: ScenarioKey;
-    label: string;
-    description: string;
-    icon: typeof AlertTriangle;
-    impact: string;
-    lossPercent: number;
-    lossAmount: string;
-    recovery: string;
-    color: string;
-}[] = [
-        {
-            key: "crash",
-            label: "Market Crash (-20%)",
-            description:
-                "Simulates a broad equity market selloff of 20%, with correlated credit spread widening and flight-to-quality in treasuries.",
-            icon: TrendingDown,
-            impact: "Severe",
-            lossPercent: 14.2,
-            lossAmount: "$182,322",
-            recovery: "6-9 months",
-            color: "var(--risk-high)",
-        },
-        {
-            key: "rate",
-            label: "Interest Rate Hike (+200bp)",
-            description:
-                "Models a rapid 200 basis point increase in the federal funds rate with cascading effects on bond prices and rate-sensitive equities.",
-            icon: Zap,
-            impact: "Moderate",
-            lossPercent: 7.8,
-            lossAmount: "$100,193",
-            recovery: "3-5 months",
-            color: "var(--warning)",
-        },
-        {
-            key: "crypto",
-            label: "Crypto Winter",
-            description:
-                "Simulates a 60% decline in digital assets with limited contagion to traditional markets, primarily affecting alternative allocations.",
-            icon: Snowflake,
-            impact: "Low",
-            lossPercent: 2.4,
-            lossAmount: "$30,828",
-            recovery: "1-2 months",
-            color: "var(--risk-medium)",
-        },
-    ];
 
 const chartDataMap: Record<ScenarioKey, Array<{ day: string; value: number; stressed: number }>> = {
     crash: [
@@ -146,13 +98,51 @@ function StressTooltip({ active, payload, label }: TooltipProps) {
 
 export default function StressTestPage() {
     const [selected, setSelected] = useState<ScenarioKey>("crash");
+    const { t } = useTranslation();
+
+    const scenarios = [
+        {
+            key: "crash" as ScenarioKey,
+            label: t("stress.marketCrash"),
+            description: t("stress.marketCrashDesc"),
+            icon: TrendingDown,
+            impact: t("stress.severe"),
+            lossPercent: 14.2,
+            lossAmount: "$182,322",
+            recovery: "6-9 months",
+            color: "var(--risk-high)",
+        },
+        {
+            key: "rate" as ScenarioKey,
+            label: t("stress.rateHike"),
+            description: t("stress.rateHikeDesc"),
+            icon: Zap,
+            impact: t("overview.moderate"),
+            lossPercent: 7.8,
+            lossAmount: "$100,193",
+            recovery: "3-5 months",
+            color: "var(--warning)",
+        },
+        {
+            key: "crypto" as ScenarioKey,
+            label: t("stress.cryptoWinter"),
+            description: t("stress.cryptoWinterDesc"),
+            icon: Snowflake,
+            impact: t("stress.low"),
+            lossPercent: 2.4,
+            lossAmount: "$30,828",
+            recovery: "1-2 months",
+            color: "var(--risk-medium)",
+        },
+    ];
+
     const scenario = scenarios.find((s) => s.key === selected)!;
     const chartData = chartDataMap[selected];
 
     return (
         <DashboardLayout
-            title="Stress Test"
-            subtitle="Scenario-based portfolio impact analysis"
+            title={t("stress.title")}
+            subtitle={t("stress.subtitle")}
         >
             {/* ── Scenario Selector ───────────────────────────────── */}
             <div
@@ -249,7 +239,7 @@ export default function StressTestPage() {
                                 letterSpacing: "0.04em",
                             }}
                         >
-                            Impact Severity
+                            {t("stress.impactSeverity")}
                         </span>
                         <div
                             style={{
@@ -280,7 +270,7 @@ export default function StressTestPage() {
                                 letterSpacing: "0.04em",
                             }}
                         >
-                            Projected Loss
+                            {t("stress.projectedLoss")}
                         </span>
                         <div
                             style={{
@@ -321,7 +311,7 @@ export default function StressTestPage() {
                                 letterSpacing: "0.04em",
                             }}
                         >
-                            Est. Recovery Time
+                            {t("stress.estRecoveryTime")}
                         </span>
                         <div
                             style={{
@@ -338,7 +328,7 @@ export default function StressTestPage() {
                     {/* Loss bar indicator */}
                     <div>
                         <div style={{ fontSize: 11, color: "var(--fg-muted)", marginBottom: 6 }}>
-                            Loss Severity
+                            {t("stress.lossSeverity")}
                         </div>
                         <div
                             style={{
@@ -380,7 +370,7 @@ export default function StressTestPage() {
                                     margin: 0,
                                 }}
                             >
-                                Portfolio Value Projection
+                                {t("stress.portfolioValueProjection")}
                             </h3>
                             <p
                                 style={{
@@ -390,13 +380,13 @@ export default function StressTestPage() {
                                     marginTop: 3,
                                 }}
                             >
-                                Baseline vs. stressed scenario over 90 days
+                                {t("stress.baselineVsStressed")}
                             </p>
                         </div>
                         <div style={{ display: "flex", gap: 14 }}>
                             {[
-                                { label: "Baseline", color: "var(--accent)" },
-                                { label: "Stressed", color: "#f87171" },
+                                { label: t("stress.baseline"), color: "var(--accent)" },
+                                { label: t("stress.stressed"), color: "#f87171" },
                             ].map((l) => (
                                 <div
                                     key={l.label}

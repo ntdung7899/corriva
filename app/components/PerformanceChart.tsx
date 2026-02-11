@@ -11,6 +11,7 @@ import {
     Area,
     AreaChart,
 } from "recharts";
+import { useTranslation } from "../i18n/LanguageContext";
 
 const performanceData = [
     { month: "Jul", portfolio: 1000000, benchmark: 1000000 },
@@ -82,6 +83,8 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 }
 
 export default function PerformanceChart() {
+    const { t } = useTranslation();
+
     return (
         <div className="card" style={{ padding: "24px" }}>
             <div
@@ -101,7 +104,7 @@ export default function PerformanceChart() {
                             margin: 0,
                         }}
                     >
-                        Portfolio Performance
+                        {t("charts.portfolioPerformance")}
                     </h3>
                     <p
                         style={{
@@ -111,13 +114,13 @@ export default function PerformanceChart() {
                             marginTop: 4,
                         }}
                     >
-                        12-month trailing vs. S&P 500 benchmark
+                        {t("charts.trailingBenchmark")}
                     </p>
                 </div>
                 <div style={{ display: "flex", gap: 16 }}>
                     {[
-                        { label: "Portfolio", color: "var(--accent)" },
-                        { label: "Benchmark", color: "var(--fg-dim)" },
+                        { label: t("charts.portfolio"), color: "var(--accent)" },
+                        { label: t("charts.benchmark"), color: "var(--fg-dim)" },
                     ].map((item) => (
                         <div
                             key={item.label}

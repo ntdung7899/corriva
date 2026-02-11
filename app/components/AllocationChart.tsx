@@ -1,15 +1,7 @@
 "use client";
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-
-const allocationData = [
-    { name: "US Equities", value: 35, color: "#38bdf8" },
-    { name: "Int'l Equities", value: 20, color: "#6366f1" },
-    { name: "Fixed Income", value: 25, color: "#34d399" },
-    { name: "Real Estate", value: 10, color: "#fbbf24" },
-    { name: "Commodities", value: 5, color: "#fb923c" },
-    { name: "Cash", value: 5, color: "#64748b" },
-];
+import { useTranslation } from "../i18n/LanguageContext";
 
 interface CustomTooltipProps {
     active?: boolean;
@@ -39,6 +31,17 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
 }
 
 export default function AllocationChart() {
+    const { t } = useTranslation();
+
+    const allocationData = [
+        { name: t("charts.usEquities"), value: 35, color: "#38bdf8" },
+        { name: t("charts.intlEquities"), value: 20, color: "#6366f1" },
+        { name: t("charts.fixedIncome"), value: 25, color: "#34d399" },
+        { name: t("charts.realEstate"), value: 10, color: "#fbbf24" },
+        { name: t("charts.commodities"), value: 5, color: "#fb923c" },
+        { name: t("charts.cash"), value: 5, color: "#64748b" },
+    ];
+
     return (
         <div className="card" style={{ padding: "24px" }}>
             <h3
@@ -50,7 +53,7 @@ export default function AllocationChart() {
                     marginBottom: 4,
                 }}
             >
-                Asset Allocation
+                {t("charts.assetAllocation")}
             </h3>
             <p
                 style={{
@@ -60,7 +63,7 @@ export default function AllocationChart() {
                     marginBottom: 20,
                 }}
             >
-                Current portfolio distribution
+                {t("charts.currentDistribution")}
             </p>
             <div
                 style={{

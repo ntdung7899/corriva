@@ -2,6 +2,7 @@
 
 import DashboardLayout from "../components/DashboardLayout";
 import { Plus, ArrowUpDown } from "lucide-react";
+import { useTranslation } from "../i18n/LanguageContext";
 
 const assets = [
     {
@@ -10,7 +11,7 @@ const assets = [
         allocation: 12.5,
         price: 242.31,
         volatility: 18.2,
-        risk: "Medium",
+        risk: "High" as const,
         change: 1.24,
     },
     {
@@ -19,7 +20,7 @@ const assets = [
         allocation: 10.8,
         price: 458.72,
         volatility: 15.6,
-        risk: "Low",
+        risk: "Low" as const,
         change: 0.87,
     },
     {
@@ -28,7 +29,7 @@ const assets = [
         allocation: 25.0,
         price: 72.45,
         volatility: 4.2,
-        risk: "Low",
+        risk: "Low" as const,
         change: -0.12,
     },
     {
@@ -37,7 +38,7 @@ const assets = [
         allocation: 8.3,
         price: 892.14,
         volatility: 42.1,
-        risk: "High",
+        risk: "High" as const,
         change: 3.45,
     },
     {
@@ -46,7 +47,7 @@ const assets = [
         allocation: 11.2,
         price: 82.31,
         volatility: 12.8,
-        risk: "Medium",
+        risk: "Medium" as const,
         change: -0.34,
     },
     {
@@ -55,7 +56,7 @@ const assets = [
         allocation: 5.0,
         price: 128.55,
         volatility: 19.4,
-        risk: "Medium",
+        risk: "Medium" as const,
         change: 0.56,
     },
     {
@@ -64,7 +65,7 @@ const assets = [
         allocation: 5.0,
         price: 218.90,
         volatility: 14.1,
-        risk: "Low",
+        risk: "Low" as const,
         change: 0.92,
     },
     {
@@ -73,7 +74,7 @@ const assets = [
         allocation: 9.2,
         price: 215.63,
         volatility: 22.7,
-        risk: "Medium",
+        risk: "Medium" as const,
         change: -1.15,
     },
     {
@@ -82,35 +83,61 @@ const assets = [
         allocation: 7.0,
         price: 248.90,
         volatility: 16.3,
-        risk: "Medium",
+        risk: "Medium" as const,
         change: 0.42,
     },
     {
-        name: "Cash & Equivalents",
+        nameKey: "portfolio.cashEquivalents",
         ticker: "CASH",
         allocation: 6.0,
         price: 1.0,
         volatility: 0.0,
-        risk: "Low",
+        risk: "Low" as const,
         change: 0.0,
     },
 ];
 
-const riskBadge = (level: string) => {
-    const cls =
-        level === "Low"
-            ? "badge-low"
-            : level === "High"
-                ? "badge-high"
-                : "badge-medium";
-    return <span className={`badge ${cls}`}>{level}</span>;
-};
+type RiskLevel = "High" | "Medium" | "Low";
 
 export default function PortfolioPage() {
+    const { t } = useTranslation();
+
+    const riskTranslation: Record<RiskLevel, string> = {
+        High: t("portfolio.riskHigh"),
+        Medium: t("portfolio.riskMedium"),
+        Low: t("portfolio.riskLow"),
+    };
+
+    const riskBadge = (level: RiskLevel) => {
+        const cls =
+            level === "Low"
+                ? "badge-low"
+                : level === "High"
+                    ? "badge-high"
+                    : "badge-medium";
+        return <span className={`badge ${cls}`}>{riskTranslation[level]}</span>;
+    };
+
+    const tabs = [
+        t("portfolio.allAssets"),
+        t("portfolio.equities"),
+        t("portfolio.fixedIncome"),
+        t("portfolio.alternatives"),
+    ];
+
+    const headers = [
+        t("portfolio.asset"),
+        t("portfolio.allocation"),
+        t("portfolio.currentPrice"),
+        t("portfolio.change24h"),
+        t("portfolio.volatility"),
+        t("portfolio.riskLevel"),
+    ];
+
     return (
         <DashboardLayout
-            title="Portfolio"
-            subtitle="Manage and monitor your holdings"
+            title={t("portfolio.title")}
+            subtitle={t("portfolio.subtitle")}
         >
             {/* Header row */}
             <div
@@ -122,27 +149,25 @@ export default function PortfolioPage() {
                 }}
             >
                 <div style={{ display: "flex", gap: 8 }}>
-                    {["All Assets", "Equities", "Fixed Income", "Alternatives"].map(
-                        (tab, i) => (
-                            <button
-                                key={tab}
-                                style={{
-                                    padding: "7px 16px",
-                                    borderRadius: "var(--radius-full)",
-                                    border: "1px solid var(--border)",
-                                    background:
-                                        i === 0 ? "var(--accent-soft)" : "transparent",
-                                    color: i === 0 ? "var(--accent)" : "var(--fg-secondary)",
-                                    fontSize: 13,
-                                    fontWeight: 500,
-                                    cursor: "pointer",
-                                    transition: "all 0.15s",
-                                }}
-                            >
-                                {tab}
-                            </button>
-                        )
-                    )}
+                    {tabs.map((tab, i) => (
+                        <button
+                            key={tab}
+                            style={{
+                                padding: "7px 16px",
+                                borderRadius: "var(--radius-full)",
+                                border: "1px solid var(--border)",
+                                background:
+                                    i === 0 ? "var(--accent-soft)" : "transparent",
+                                color: i === 0 ? "var(--accent)" : "var(--fg-secondary)",
+                                fontSize: 13,
+                                fontWeight: 500,
+                                cursor: "pointer",
+                                transition: "all 0.15s",
+                            }}
+                        >
+                            {tab}
+                        </button>
+                    ))}
                 </div>
                 <button
                     style={{
@@ -162,7 +187,7 @@ export default function PortfolioPage() {
                     }}
                 >
                     <Plus size={15} />
-                    Add Asset
+                    {t("portfolio.addAsset")}
                 </button>
             </div>
 
@@ -185,14 +210,7 @@ export default function PortfolioPage() {
                                 background: "var(--bg-elevated)",
                             }}
                         >
-                            {[
-                                "Asset",
-                                "Allocation %",
-                                "Current Price",
-                                "24h Change",
-                                "Volatility",
-                                "Risk Level",
-                            ].map((h) => (
+                            {headers.map((h) => (
                                 <th
                                     key={h}
                                     style={{
@@ -274,7 +292,7 @@ export default function PortfolioPage() {
                                                     fontSize: 13,
                                                 }}
                                             >
-                                                {a.name}
+                                                {"nameKey" in a ? t((a as { nameKey: string }).nameKey) : a.name}
                                             </div>
                                             <div
                                                 style={{
@@ -379,14 +397,14 @@ export default function PortfolioPage() {
                 }}
             >
                 <span>
-                    Total Assets: <strong style={{ color: "var(--fg-primary)" }}>10</strong>
+                    {t("portfolio.totalAssets")} <strong style={{ color: "var(--fg-primary)" }}>10</strong>
                 </span>
                 <span>
-                    Avg. Volatility:{" "}
+                    {t("portfolio.avgVolatility")}{" "}
                     <strong style={{ color: "var(--fg-primary)" }}>16.5%</strong>
                 </span>
                 <span>
-                    Portfolio Beta:{" "}
+                    {t("portfolio.portfolioBeta")}{" "}
                     <strong style={{ color: "var(--fg-primary)" }}>1.12</strong>
                 </span>
             </div>

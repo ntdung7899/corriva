@@ -13,6 +13,7 @@ import {
     ToggleRight,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "../i18n/LanguageContext";
 
 interface SettingToggleProps {
     label: string;
@@ -58,32 +59,34 @@ function SettingToggle({ label, description, defaultOn = false }: SettingToggleP
     );
 }
 
-const sections = [
-    {
-        icon: User,
-        title: "Profile",
-        description: "Manage your account details and preferences",
-    },
-    {
-        icon: Shield,
-        title: "Security",
-        description: "Two-factor authentication and login settings",
-    },
-    {
-        icon: Key,
-        title: "API Keys",
-        description: "Manage API access for integrations",
-    },
-    {
-        icon: Globe,
-        title: "Data Sources",
-        description: "Configure market data providers",
-    },
-];
-
 export default function SettingsPage() {
+    const { t } = useTranslation();
+
+    const sections = [
+        {
+            icon: User,
+            title: t("settings.profile"),
+            description: t("settings.profileDesc"),
+        },
+        {
+            icon: Shield,
+            title: t("settings.security"),
+            description: t("settings.securityDesc"),
+        },
+        {
+            icon: Key,
+            title: t("settings.apiKeys"),
+            description: t("settings.apiKeysDesc"),
+        },
+        {
+            icon: Globe,
+            title: t("settings.dataSources"),
+            description: t("settings.dataSourcesDesc"),
+        },
+    ];
+
     return (
-        <DashboardLayout title="Settings" subtitle="Configure your preferences">
+        <DashboardLayout title={t("settings.title")} subtitle={t("settings.subtitle")}>
             <div
                 style={{
                     display: "grid",
@@ -102,7 +105,7 @@ export default function SettingsPage() {
                             marginBottom: 16,
                         }}
                     >
-                        Account Settings
+                        {t("settings.accountSettings")}
                     </h3>
                     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                         {sections.map((s) => {
@@ -186,27 +189,27 @@ export default function SettingsPage() {
                                     margin: 0,
                                 }}
                             >
-                                Notifications
+                                {t("settings.notifications")}
                             </h3>
                         </div>
                         <SettingToggle
-                            label="Risk Threshold Alerts"
-                            description="Get notified when risk scores exceed defined thresholds"
+                            label={t("settings.riskThresholdAlerts")}
+                            description={t("settings.riskThresholdAlertsDesc")}
                             defaultOn
                         />
                         <SettingToggle
-                            label="Daily Portfolio Summary"
-                            description="Receive a daily email summary of portfolio performance"
+                            label={t("settings.dailySummary")}
+                            description={t("settings.dailySummaryDesc")}
                             defaultOn
                         />
                         <SettingToggle
-                            label="Rebalancing Recommendations"
-                            description="AI-generated rebalancing suggestions"
+                            label={t("settings.rebalancingRec")}
+                            description={t("settings.rebalancingRecDesc")}
                             defaultOn={false}
                         />
                         <SettingToggle
-                            label="Market Event Alerts"
-                            description="Major market movement notifications"
+                            label={t("settings.marketEventAlerts")}
+                            description={t("settings.marketEventAlertsDesc")}
                             defaultOn
                         />
                     </div>
@@ -229,17 +232,17 @@ export default function SettingsPage() {
                                     margin: 0,
                                 }}
                             >
-                                Display
+                                {t("settings.display")}
                             </h3>
                         </div>
                         <SettingToggle
-                            label="Dark Mode"
-                            description="Use dark color scheme throughout the application"
+                            label={t("settings.darkMode")}
+                            description={t("settings.darkModeDesc")}
                             defaultOn
                         />
                         <SettingToggle
-                            label="Compact View"
-                            description="Reduce card padding for higher information density"
+                            label={t("settings.compactView")}
+                            description={t("settings.compactViewDesc")}
                             defaultOn={false}
                         />
                     </div>
