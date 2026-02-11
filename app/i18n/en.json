@@ -44,7 +44,16 @@
         "riskHigh": "High",
         "riskMedium": "Medium",
         "riskLow": "Low",
-        "cashEquivalents": "Cash & Equivalents"
+        "cashEquivalents": "Cash & Equivalents",
+        "crypto": "Crypto",
+        "marketCap": "Market Cap",
+        "rank": "Rank",
+        "volume": "Volume (24h)",
+        "loading": "Loading data...",
+        "error": "Failed to load data",
+        "retry": "Retry",
+        "totalCoins": "Total Coins:",
+        "symbol": "Symbol"
     },
     "risk": {
         "title": "Risk Report",

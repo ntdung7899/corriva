@@ -44,7 +44,16 @@
         "riskHigh": "Cao",
         "riskMedium": "Trung bình",
         "riskLow": "Thấp",
-        "cashEquivalents": "Tiền mặt & Tương đương"
+        "cashEquivalents": "Tiền mặt & Tương đương",
+        "crypto": "Crypto",
+        "marketCap": "Vốn hóa",
+        "rank": "Hạng",
+        "volume": "Khối lượng (24h)",
+        "loading": "Đang tải dữ liệu...",
+        "error": "Không thể tải dữ liệu",
+        "retry": "Thử lại",
+        "totalCoins": "Tổng Coin:",
+        "symbol": "Ký hiệu"
     },
     "risk": {
         "title": "Báo cáo Rủi ro",

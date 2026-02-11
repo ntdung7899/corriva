@@ -14,12 +14,12 @@ import {
 import { useTranslation } from "../i18n/LanguageContext";
 
 const navItems = [
-    { key: "nav.overview", href: "/", icon: LayoutDashboard },
-    { key: "nav.portfolio", href: "/portfolio", icon: Briefcase },
-    { key: "nav.riskReport", href: "/risk-report", icon: FileBarChart },
-    { key: "nav.stressTest", href: "/stress-test", icon: FlaskConical },
-    { key: "nav.alerts", href: "/alerts", icon: Bell },
-    { key: "nav.settings", href: "/settings", icon: Settings },
+    { key: "nav.overview", href: "/dashboard", icon: LayoutDashboard },
+    { key: "nav.portfolio", href: "/dashboard/portfolio", icon: Briefcase },
+    { key: "nav.riskReport", href: "/dashboard/risk-report", icon: FileBarChart },
+    { key: "nav.stressTest", href: "/dashboard/stress-test", icon: FlaskConical },
+    { key: "nav.alerts", href: "/dashboard/alerts", icon: Bell },
+    { key: "nav.settings", href: "/dashboard/settings", icon: Settings },
 ];
 
 export default function Sidebar() {
