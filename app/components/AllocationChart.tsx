@@ -3,6 +3,13 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { useTranslation } from "../i18n/LanguageContext";
 
+interface AllocItem {
+    name: string;
+    symbol?: string;
+    pct: number;
+    color: string;
+}
+
 interface CustomTooltipProps {
     active?: boolean;
     payload?: Array<{ name: string; value: number; payload: { color: string } }>;
@@ -30,17 +37,56 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
     );
 }
 
-export default function AllocationChart() {
+interface AllocationChartProps {
+    data?: AllocItem[];
+}
+
+export default function AllocationChart({ data }: AllocationChartProps) {
     const { t } = useTranslation();
 
-    const allocationData = [
-        { name: t("charts.usEquities"), value: 35, color: "#38bdf8" },
-        { name: t("charts.intlEquities"), value: 20, color: "#6366f1" },
-        { name: t("charts.fixedIncome"), value: 25, color: "#34d399" },
-        { name: t("charts.realEstate"), value: 10, color: "#fbbf24" },
-        { name: t("charts.commodities"), value: 5, color: "#fb923c" },
-        { name: t("charts.cash"), value: 5, color: "#64748b" },
-    ];
+    const allocationData = data && data.length > 0
+        ? data.map(d => ({ name: d.name, value: d.pct, color: d.color }))
+        : [];
+
+    if (allocationData.length === 0) {
+        return (
+            <div className="card" style={{ padding: "24px" }}>
+                <h3
+                    style={{
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: "var(--fg-primary)",
+                        margin: 0,
+                        marginBottom: 4,
+                    }}
+                >
+                    {t("charts.assetAllocation")}
+                </h3>
+                <p
+                    style={{
+                        fontSize: 12,
+                        color: "var(--fg-muted)",
+                        margin: 0,
+                        marginBottom: 20,
+                    }}
+                >
+                    {t("charts.currentDistribution")}
+                </p>
+                <div
+                    style={{
+                        height: 180,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "var(--fg-dim)",
+                        fontSize: 13,
+                    }}
+                >
+                    {t("myPortfolio.noChartData")}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="card" style={{ padding: "24px" }}>

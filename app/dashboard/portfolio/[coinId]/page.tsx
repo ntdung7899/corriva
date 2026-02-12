@@ -21,6 +21,10 @@ import {
     ShieldCheck,
     Crosshair,
     Repeat,
+    Shield,
+    Gauge,
+    AlertTriangle,
+    Zap,
 } from "lucide-react";
 import {
     getCoinMarketChart,
@@ -35,6 +39,12 @@ import {
     type DCAGrade,
     type CyclePhase,
 } from "../../../lib/crypto-api";
+import {
+    analyzeRisk,
+    type RiskAnalysis,
+    type RiskLevel,
+    type Signal,
+} from "../../../lib/risk-engine";
 import {
     AreaChart,
     Area,
@@ -328,6 +338,319 @@ function DCASection({ dca, t }: { dca: DCAAnalysis; t: (key: string) => string }
 }
 
 
+/* ── Risk level visual config ───────────────────────────────────── */
+const riskLevelConfig: Record<RiskLevel, { color: string; bg: string; label: string }> = {
+    low: { color: "var(--risk-low)", bg: "var(--risk-low-soft)", label: "riskEngine.levelLow" },
+    moderate: { color: "var(--risk-medium)", bg: "var(--risk-medium-soft)", label: "riskEngine.levelModerate" },
+    high: { color: "var(--risk-high)", bg: "var(--risk-high-soft)", label: "riskEngine.levelHigh" },
+    extreme: { color: "#dc2626", bg: "rgba(220,38,38,0.12)", label: "riskEngine.levelExtreme" },
+};
+
+const signalConfig: Record<Signal, { color: string; bg: string; icon: typeof TrendingUp }> = {
+    buy: { color: "#22c55e", bg: "rgba(34,197,94,0.12)", icon: TrendingUp },
+    hold: { color: "var(--risk-medium)", bg: "var(--risk-medium-soft)", icon: Minus },
+    sell: { color: "var(--risk-high)", bg: "var(--risk-high-soft)", icon: TrendingDown },
+    accumulate: { color: "var(--accent)", bg: "var(--accent-soft)", icon: Zap },
+    reduceRisk: { color: "#f97316", bg: "rgba(249,115,22,0.12)", icon: AlertTriangle },
+};
+
+/* ── Risk Dashboard Section Component ───────────────────────────── */
+function RiskDashboardSection({ risk, t }: { risk: RiskAnalysis; t: (key: string) => string }) {
+    const levelCfg = riskLevelConfig[risk.riskLevel];
+    const sigCfg = signalConfig[risk.signal];
+    const SigIcon = sigCfg.icon;
+
+    // SVG arc gauge parameters
+    const radius = 64;
+    const stroke = 10;
+    const circumference = Math.PI * radius; // half-circle
+    const progress = (risk.riskScore / 100) * circumference;
+
+    // Map signal key to i18n key
+    const signalLabelMap: Record<Signal, string> = {
+        buy: "riskEngine.signalBuy",
+        hold: "riskEngine.signalHold",
+        sell: "riskEngine.signalSell",
+        accumulate: "riskEngine.signalAccumulate",
+        reduceRisk: "riskEngine.signalReduceRisk",
+    };
+
+    return (
+        <div style={{ marginBottom: 20 }}>
+            {/* Header */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                <Shield size={18} color="var(--accent)" />
+                <span style={{ fontSize: 16, fontWeight: 700, color: "var(--fg-primary)" }}>
+                    {t("riskEngine.title")}
+                </span>
+                <span className="badge badge-accent" style={{ fontSize: 11 }}>
+                    AI
+                </span>
+            </div>
+
+            {/* Top row: Risk Score + Signal + Confidence */}
+            <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                gap: 14,
+                marginBottom: 16,
+            }}>
+                {/* Risk Score Gauge Card */}
+                <div className="card" style={{
+                    padding: "24px",
+                    position: "relative",
+                    overflow: "hidden",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                }}>
+                    <div style={{
+                        position: "absolute", top: 0, right: 0,
+                        width: 140, height: 140,
+                        background: `radial-gradient(circle at top right, ${levelCfg.bg}, transparent 70%)`,
+                        pointerEvents: "none",
+                    }} />
+                    <div style={{ fontSize: 12, color: "var(--fg-muted)", marginBottom: 12, fontWeight: 500, alignSelf: "flex-start" }}>
+                        {t("riskEngine.riskScore")}
+                    </div>
+
+                    {/* SVG Half-circle gauge */}
+                    <svg width={radius * 2 + stroke * 2} height={radius + stroke * 2 + 10} viewBox={`0 0 ${radius * 2 + stroke * 2} ${radius + stroke * 2 + 10}`}>
+                        {/* Background arc */}
+                        <path
+                            d={`M ${stroke} ${radius + stroke} A ${radius} ${radius} 0 0 1 ${radius * 2 + stroke} ${radius + stroke}`}
+                            fill="none"
+                            stroke="var(--bg-active)"
+                            strokeWidth={stroke}
+                            strokeLinecap="round"
+                        />
+                        {/* Progress arc */}
+                        <path
+                            d={`M ${stroke} ${radius + stroke} A ${radius} ${radius} 0 0 1 ${radius * 2 + stroke} ${radius + stroke}`}
+                            fill="none"
+                            stroke={levelCfg.color}
+                            strokeWidth={stroke}
+                            strokeLinecap="round"
+                            strokeDasharray={`${progress} ${circumference}`}
+                            style={{ transition: "stroke-dasharray 0.8s ease" }}
+                        />
+                        {/* Score text */}
+                        <text
+                            x={radius + stroke}
+                            y={radius + stroke - 8}
+                            textAnchor="middle"
+                            style={{ fontSize: 32, fontWeight: 800, fill: "var(--fg-primary)" }}
+                        >
+                            {risk.riskScore}
+                        </text>
+                        <text
+                            x={radius + stroke}
+                            y={radius + stroke + 14}
+                            textAnchor="middle"
+                            style={{ fontSize: 12, fontWeight: 600, fill: levelCfg.color }}
+                        >
+                            {t(levelCfg.label)}
+                        </text>
+                    </svg>
+                </div>
+
+                {/* Signal Card */}
+                <div className="card" style={{
+                    padding: "24px",
+                    position: "relative",
+                    overflow: "hidden",
+                }}>
+                    <div style={{
+                        position: "absolute", top: 0, right: 0,
+                        width: 140, height: 140,
+                        background: `radial-gradient(circle at top right, ${sigCfg.bg}, transparent 70%)`,
+                        pointerEvents: "none",
+                    }} />
+                    <div style={{ fontSize: 12, color: "var(--fg-muted)", marginBottom: 12, fontWeight: 500 }}>
+                        {t("riskEngine.signal")}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                        <div style={{
+                            width: 48, height: 48,
+                            borderRadius: "var(--radius-md)",
+                            background: sigCfg.bg,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                            <SigIcon size={24} color={sigCfg.color} />
+                        </div>
+                        <div>
+                            <div style={{
+                                fontSize: 22, fontWeight: 800,
+                                color: sigCfg.color, letterSpacing: "-0.01em",
+                            }}>
+                                {t(signalLabelMap[risk.signal])}
+                            </div>
+                        </div>
+                    </div>
+                    <div style={{
+                        fontSize: 12,
+                        color: "var(--fg-secondary)",
+                        lineHeight: 1.5,
+                    }}>
+                        {t(risk.signalReason)}
+                    </div>
+                </div>
+
+                {/* Confidence Card */}
+                <div className="card" style={{
+                    padding: "24px",
+                    position: "relative",
+                    overflow: "hidden",
+                }}>
+                    <div style={{
+                        position: "absolute", top: 0, right: 0, width: 140, height: 140,
+                        background: "radial-gradient(circle at top right, var(--accent-soft), transparent 70%)",
+                        pointerEvents: "none",
+                    }} />
+                    <div style={{ fontSize: 12, color: "var(--fg-muted)", marginBottom: 12, fontWeight: 500 }}>
+                        {t("riskEngine.confidence")}
+                    </div>
+                    <div style={{
+                        fontSize: 36, fontWeight: 800,
+                        color: "var(--accent)",
+                        fontVariantNumeric: "tabular-nums",
+                        letterSpacing: "-0.02em",
+                        marginBottom: 8,
+                    }}>
+                        {risk.confidence}%
+                    </div>
+                    {/* Confidence bar */}
+                    <div style={{
+                        height: 6,
+                        borderRadius: 3,
+                        background: "var(--bg-active)",
+                        overflow: "hidden",
+                    }}>
+                        <div style={{
+                            height: "100%",
+                            width: `${risk.confidence}%`,
+                            borderRadius: 3,
+                            background: "var(--accent)",
+                            transition: "width 0.6s ease",
+                        }} />
+                    </div>
+                </div>
+            </div>
+
+            {/* Key Risk Metrics Row */}
+            <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+                gap: 12,
+                marginBottom: 16,
+            }}>
+                {[
+                    { label: t("riskEngine.volatility"), value: `${risk.metrics.annualizedVolatility}%`, color: risk.metrics.annualizedVolatility > 80 ? "var(--risk-high)" : risk.metrics.annualizedVolatility > 40 ? "var(--risk-medium)" : "var(--risk-low)" },
+                    { label: t("riskEngine.maxDrawdown"), value: `${risk.metrics.maxDrawdown}%`, color: risk.metrics.maxDrawdown < -50 ? "var(--risk-high)" : risk.metrics.maxDrawdown < -20 ? "var(--risk-medium)" : "var(--risk-low)" },
+                    { label: t("riskEngine.var95"), value: `${risk.metrics.var95}%`, color: risk.metrics.var95 < -5 ? "var(--risk-high)" : risk.metrics.var95 < -2 ? "var(--risk-medium)" : "var(--risk-low)" },
+                    { label: t("riskEngine.portfolioVol"), value: `${risk.metrics.portfolioVolatility}%`, color: "var(--accent)" },
+                ].map((m) => (
+                    <div key={m.label} className="card" style={{ padding: "16px 18px" }}>
+                        <div style={{ fontSize: 11, color: "var(--fg-muted)", marginBottom: 6, fontWeight: 500 }}>
+                            {m.label}
+                        </div>
+                        <div style={{ fontSize: 18, fontWeight: 700, color: m.color, fontVariantNumeric: "tabular-nums" }}>
+                            {m.value}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Technical Indicators Row */}
+            <div style={{ marginBottom: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                    <Gauge size={16} color="var(--fg-muted)" />
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "var(--fg-primary)" }}>
+                        {t("riskEngine.technicals")}
+                    </span>
+                </div>
+                <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+                    gap: 12,
+                }}>
+                    {/* RSI */}
+                    <div className="card" style={{ padding: "16px 18px" }}>
+                        <div style={{ fontSize: 11, color: "var(--fg-muted)", marginBottom: 6, fontWeight: 500 }}>
+                            {t("riskEngine.rsi14")}
+                        </div>
+                        <div style={{
+                            fontSize: 18, fontWeight: 700, fontVariantNumeric: "tabular-nums",
+                            color: risk.technicals.rsi14 > 70 ? "var(--risk-high)" : risk.technicals.rsi14 < 30 ? "#22c55e" : "var(--fg-primary)",
+                        }}>
+                            {risk.technicals.rsi14}
+                        </div>
+                        <div style={{ fontSize: 10, color: "var(--fg-dim)", marginTop: 4 }}>
+                            {risk.technicals.rsi14 > 70 ? "Overbought" : risk.technicals.rsi14 < 30 ? "Oversold" : "Neutral"}
+                        </div>
+                    </div>
+                    {/* SMA50 */}
+                    <div className="card" style={{ padding: "16px 18px" }}>
+                        <div style={{ fontSize: 11, color: "var(--fg-muted)", marginBottom: 6, fontWeight: 500 }}>
+                            {t("riskEngine.sma50")}
+                        </div>
+                        <div style={{
+                            fontSize: 16, fontWeight: 700, fontVariantNumeric: "tabular-nums",
+                            color: risk.technicals.currentPrice > risk.technicals.sma50 ? "var(--risk-low)" : "var(--risk-high)",
+                        }}>
+                            ${formatPrice(risk.technicals.sma50)}
+                        </div>
+                        <div style={{ fontSize: 10, color: "var(--fg-dim)", marginTop: 4 }}>
+                            {risk.technicals.currentPrice > risk.technicals.sma50 ? "Price Above" : "Price Below"}
+                        </div>
+                    </div>
+                    {/* SMA200 */}
+                    <div className="card" style={{ padding: "16px 18px" }}>
+                        <div style={{ fontSize: 11, color: "var(--fg-muted)", marginBottom: 6, fontWeight: 500 }}>
+                            {t("riskEngine.sma200")}
+                        </div>
+                        <div style={{
+                            fontSize: 16, fontWeight: 700, fontVariantNumeric: "tabular-nums",
+                            color: risk.technicals.currentPrice > risk.technicals.sma200 ? "var(--risk-low)" : "var(--risk-high)",
+                        }}>
+                            ${formatPrice(risk.technicals.sma200)}
+                        </div>
+                        <div style={{ fontSize: 10, color: "var(--fg-dim)", marginTop: 4 }}>
+                            {risk.technicals.sma50 > risk.technicals.sma200 ? "Golden Cross ✨" : "Death Cross ⚠️"}
+                        </div>
+                    </div>
+                    {/* Momentum */}
+                    <div className="card" style={{ padding: "16px 18px" }}>
+                        <div style={{ fontSize: 11, color: "var(--fg-muted)", marginBottom: 6, fontWeight: 500 }}>
+                            {t("riskEngine.momentum")}
+                        </div>
+                        <div style={{
+                            fontSize: 18, fontWeight: 700, fontVariantNumeric: "tabular-nums",
+                            color: risk.technicals.momentum30d >= 0 ? "var(--risk-low)" : "var(--risk-high)",
+                        }}>
+                            {risk.technicals.momentum30d >= 0 ? "+" : ""}{risk.technicals.momentum30d}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Disclaimer */}
+            <div style={{
+                fontSize: 11,
+                color: "var(--fg-dim)",
+                lineHeight: 1.5,
+                padding: "12px 16px",
+                background: "var(--bg-elevated)",
+                borderRadius: "var(--radius-md)",
+                border: "1px solid var(--border)",
+            }}>
+                ⚠️ {t("riskEngine.disclaimer")}
+            </div>
+        </div>
+    );
+}
+
+
 export default function CoinDetailPage() {
     const params = useParams();
     const router = useRouter();
@@ -338,6 +661,7 @@ export default function CoinDetailPage() {
     const [chartData, setChartData] = useState<MarketChartData | null>(null);
     const [analysis, setAnalysis] = useState<MarketAnalysis | null>(null);
     const [dcaAnalysis, setDcaAnalysis] = useState<DCAAnalysis | null>(null);
+    const [riskData, setRiskData] = useState<RiskAnalysis | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedRange, setSelectedRange] = useState(3); // default 1Y
@@ -356,6 +680,8 @@ export default function CoinDetailPage() {
             setAnalysis(trend);
             const dca = analyzeDCAZones(chart, coinDetail);
             setDcaAnalysis(dca);
+            const risk = analyzeRisk(chart, coinDetail);
+            setRiskData(risk);
         } catch {
             setError(t("coinDetail.error"));
         } finally {
@@ -659,6 +985,9 @@ export default function CoinDetailPage() {
                             );
                         })}
                     </div>
+
+                    {/* ── Risk Dashboard ──────────────────────────────── */}
+                    {riskData && <RiskDashboardSection risk={riskData} t={t} />}
 
                     {/* ── Market Analysis ─────────────────────────────── */}
                     {analysis && (

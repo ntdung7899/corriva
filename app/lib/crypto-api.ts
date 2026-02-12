@@ -453,8 +453,28 @@ export function analyzeDCAZones(
         },
     };
 
-    // DCA recommended price = weighted average of VWAP, support, and volume accumulation
-    const dcaRecommendedPrice = (vwap * 0.4 + support * 0.35 + volumeAccumulationPrice * 0.25);
+    // DCA recommended price — weights shift based on grade so the
+    // suggested price lands inside (or very close to) the matching zone.
+    let dcaRecommendedPrice: number;
+
+    if (grade === "strongBuy") {
+        // Favour support heavily; price should sit inside the strongBuy zone
+        const raw = support * 0.55 + volumeAccumulationPrice * 0.25 + vwap * 0.20;
+        // Clamp to stay within (or at most at the upper edge of) the strongBuy zone
+        dcaRecommendedPrice = Math.min(raw, zones.strongBuy.high);
+    } else if (grade === "buy") {
+        // Balanced between support and VWAP — should land in the buy zone
+        const raw = support * 0.40 + volumeAccumulationPrice * 0.30 + vwap * 0.30;
+        // Clamp between buy zone boundaries
+        dcaRecommendedPrice = Math.max(zones.buy.low, Math.min(raw, zones.buy.high));
+    } else if (grade === "hold") {
+        // VWAP-centric — stay near the hold zone
+        const raw = vwap * 0.50 + volumeAccumulationPrice * 0.30 + support * 0.20;
+        dcaRecommendedPrice = Math.max(zones.hold.low, Math.min(raw, zones.hold.high));
+    } else {
+        // overvalued — no strong DCA signal, use VWAP as anchor
+        dcaRecommendedPrice = vwap * 0.50 + resistance * 0.25 + volumeAccumulationPrice * 0.25;
+    }
 
     return {
         currentPrice,
