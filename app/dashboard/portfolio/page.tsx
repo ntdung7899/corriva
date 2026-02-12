@@ -110,32 +110,43 @@ const assets = [
 type RiskLevel = "High" | "Medium" | "Low";
 
 /* ── Helper: format large numbers ────────────────────────────── */
-function formatMarketCap(value: number): string {
-    if (value >= 1e12) return `$${(value / 1e12).toFixed(2)}T`;
-    if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
-    if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`;
-    return `$${value.toLocaleString()}`;
-}
-
-function formatPrice(v: number): string {
-    if (v >= 1) return v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    return v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 });
-}
-
-const PIE_COLORS = ["#38bdf8", "#34d399", "#fbbf24", "#f87171", "#a78bfa", "#fb923c", "#2dd4bf", "#e879f9", "#60a5fa", "#4ade80"];
-
 export default function PortfolioPage() {
-    const { t } = useTranslation();
+    const { t, locale } = useTranslation();
     const router = useRouter();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     /* ── Tab state ────────────────────────────────────────────── */
     const TAB_CRYPTO = 4; // index of crypto tab
+    const TAB_MY_PORTFOLIO = 5;
     const [activeTab, setActiveTab] = useState(0);
 
     /* ── Crypto state ─────────────────────────────────────────── */
     const [coins, setCoins] = useState<CryptoCoin[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    /* ── Helper: format with locale ────────────────────────────── */
+    const formatPrice = (v: number) => {
+        if (!mounted) return v.toFixed(2);
+        const l = locale === "vi" ? "vi-VN" : "en-US";
+        if (v >= 1) return v.toLocaleString(l, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return v.toLocaleString(l, { minimumFractionDigits: 2, maximumFractionDigits: 6 });
+    };
+
+    const formatMarketCap = (v: number) => {
+        if (!mounted) return `$${(v / 1e9).toFixed(2)}B`;
+        const l = locale === "vi" ? "vi-VN" : "en-US";
+        if (v >= 1e12) return `$${(v / 1e12).toLocaleString(l, { maximumFractionDigits: 2 })}T`;
+        if (v >= 1e9) return `$${(v / 1e9).toLocaleString(l, { maximumFractionDigits: 2 })}B`;
+        if (v >= 1e6) return `$${(v / 1e6).toLocaleString(l, { maximumFractionDigits: 2 })}M`;
+        return `$${v.toLocaleString(l)}`;
+    };
+
+    const PIE_COLORS = ["#38bdf8", "#34d399", "#fbbf24", "#f87171", "#a78bfa", "#fb923c", "#2dd4bf", "#e879f9", "#60a5fa", "#4ade80"];
 
     /* ── Modal state ───────────────────────────────────────────── */
     const [modalOpen, setModalOpen] = useState(false);
@@ -145,8 +156,6 @@ export default function PortfolioPage() {
     const [coinPrices, setCoinPrices] = useState<Map<string, CryptoCoin>>(new Map());
     const [portfolioChart, setPortfolioChart] = useState<{ time: number; value: number }[]>([]);
     const [portfolioLoading, setPortfolioLoading] = useState(false);
-
-    const TAB_MY_PORTFOLIO = 5;
 
     const refreshPortfolio = useCallback(() => {
         const raw = getPortfolio();
@@ -813,14 +822,7 @@ export default function PortfolioPage() {
                                                                 fontVariantNumeric: "tabular-nums",
                                                             }}
                                                         >
-                                                            $
-                                                            {coin.current_price.toLocaleString(
-                                                                undefined,
-                                                                {
-                                                                    minimumFractionDigits: 2,
-                                                                    maximumFractionDigits: 6,
-                                                                }
-                                                            )}
+                                                            ${formatPrice(coin.current_price)}
                                                         </td>
                                                         {/* 24h Change */}
                                                         <td
@@ -1058,10 +1060,7 @@ export default function PortfolioPage() {
                                                     fontVariantNumeric: "tabular-nums",
                                                 }}
                                             >
-                                                $
-                                                {a.price.toLocaleString(undefined, {
-                                                    minimumFractionDigits: 2,
-                                                })}
+                                                ${formatPrice(a.price)}
                                             </td>
                                             {/* Change */}
                                             <td
