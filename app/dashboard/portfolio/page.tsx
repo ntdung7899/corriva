@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import DashboardLayout from "../../components/DashboardLayout";
 import { Plus, ArrowUpDown, RefreshCw, Loader2 } from "lucide-react";
 import { useTranslation } from "../../i18n/LanguageContext";
@@ -112,6 +113,7 @@ function formatMarketCap(value: number): string {
 
 export default function PortfolioPage() {
     const { t } = useTranslation();
+    const router = useRouter();
 
     /* ── Tab state ────────────────────────────────────────────── */
     const TAB_CRYPTO = 4; // index of crypto tab
@@ -393,6 +395,7 @@ export default function PortfolioPage() {
                                             return (
                                                 <tr
                                                     key={coin.id}
+                                                    onClick={() => router.push(`/dashboard/portfolio/${coin.id}`)}
                                                     style={{
                                                         borderBottom:
                                                             i < coins.length - 1
